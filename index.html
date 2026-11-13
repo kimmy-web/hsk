@@ -1,837 +1,1067 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f5f7fb" />
+  <title>HSK 1 · Flashcard & Quiz</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #172033;
+      --muted: #788397;
+      --line: #e7ebf2;
+      --primary: #5368e8;
+      --primary-dark: #4054d4;
+      --primary-soft: #eef0ff;
+      --green: #138a62;
+      --green-soft: #e9f8f1;
+      --red: #d94b5b;
+      --red-soft: #fff0f1;
+      --shadow: 0 18px 55px rgba(35, 48, 84, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(83, 104, 232, 0.08), transparent 28rem),
+        radial-gradient(circle at 100% 20%, rgba(40, 180, 140, 0.07), transparent 25rem),
+        var(--bg);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button { font: inherit; }
+    button:focus-visible {
+      outline: 3px solid rgba(83, 104, 232, 0.28);
+      outline-offset: 3px;
+    }
+
+    .app-shell {
+      width: min(100% - 36px, 900px);
+      margin: 0 auto;
+      padding: 34px 0 52px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 12px;
+      color: #fff;
+      background: linear-gradient(145deg, #7181f5, #4d60df);
+      box-shadow: 0 7px 18px rgba(83, 104, 232, 0.25);
+      font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      font-size: 21px;
+    }
+
+    .level-tag {
+      padding: 8px 12px;
+      border: 1px solid #e5e9f3;
+      border-radius: 999px;
+      color: #68748a;
+      background: rgba(255,255,255,0.75);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .intro { margin-bottom: 28px; }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(29px, 5vw, 42px);
+      line-height: 1.12;
+      letter-spacing: -0.055em;
+    }
+
+    .subtitle {
+      max-width: 590px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 6px;
+      margin-bottom: 26px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: rgba(255,255,255,0.78);
+      box-shadow: 0 6px 22px rgba(35,48,84,0.035);
+    }
+
+    .mode-button {
+      min-height: 48px;
+      padding: 11px 14px;
+      border: 0;
+      border-radius: 12px;
+      color: #7b8699;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 750;
+      transition: color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .mode-button.active {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      box-shadow: inset 0 0 0 1px rgba(83,104,232,0.08);
+    }
+
+    .panel { animation: appear .25s ease both; }
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .progress-card {
+      padding: 19px 21px 18px;
+      margin-bottom: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: 0 6px 22px rgba(35,48,84,0.035);
+    }
+
+    .progress-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 13px;
+    }
+
+    .progress-title { color: #647087; font-size: 13px; font-weight: 650; }
+    .progress-count { color: var(--text); font-size: 14px; font-weight: 850; font-variant-numeric: tabular-nums; }
+    .progress-track {
+      overflow: hidden;
+      height: 8px;
+      border-radius: 999px;
+      background: #edf0f6;
+    }
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #6d7cf0, #4a61df);
+      transition: width .3s ease;
+    }
+
+    .workspace {
+      padding: clamp(20px, 5vw, 36px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .workspace-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 23px;
+    }
+
+    .section-label {
+      margin: 0;
+      color: #7d8798;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .quiet-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      color: #6d788c;
+      background: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      transition: .18s ease;
+    }
+    .quiet-button:hover { border-color: #cbd2e4; color: var(--primary-dark); background: #fafbff; }
+
+    .flash-stage {
+      display: grid;
+      min-height: 280px;
+      place-items: center;
+      padding: 20px;
+      border: 1px solid #e9ecf7;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(114,130,246,.10), transparent 55%),
+        linear-gradient(145deg, #fbfcff, #f7f8fe);
+    }
+
+    .flash-card {
+      display: grid;
+      width: min(100%, 510px);
+      min-height: 235px;
+      place-items: center;
+      padding: 25px;
+      border: 1px solid rgba(83,104,232,.13);
+      border-radius: 20px;
+      color: var(--text);
+      background: rgba(255,255,255,.94);
+      box-shadow: 0 12px 32px rgba(57,71,135,.08);
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .flash-card:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(57,71,135,.12); }
+    .flash-face {
+      font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", KaiTi, serif;
+      font-size: clamp(76px, 14vw, 116px);
+      line-height: 1.2;
+      font-weight: 500;
+      letter-spacing: .02em;
+    }
+    .flash-face.pinyin-face {
+      color: var(--primary-dark);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: clamp(34px, 7vw, 52px);
+      font-weight: 750;
+      letter-spacing: -.035em;
+    }
+
+    .flash-hint {
+      margin: 14px 0 0;
+      color: #929bad;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .utility-row {
+      display: flex;
+      justify-content: center;
+      margin: 18px 0 22px;
+    }
+    .sound-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 10px 16px;
+      border: 1px solid #e5e9f5;
+      border-radius: 12px;
+      color: var(--primary-dark);
+      background: #f8f9ff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 750;
+      transition: .18s ease;
+    }
+    .sound-button:hover { background: var(--primary-soft); border-color: #d8ddff; }
+    .sound-icon { font-size: 17px; }
+
+    .decision-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .action-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 50px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 13px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      transition: transform .16s ease, filter .16s ease, background .16s ease;
+    }
+    .action-button:hover { transform: translateY(-1px); filter: brightness(.99); }
+    .action-button:active { transform: translateY(0); }
+    .not-known { color: #a74753; background: var(--red-soft); }
+    .known { color: #147b59; background: var(--green-soft); }
+    .primary-action { color: #fff; background: var(--primary); box-shadow: 0 8px 18px rgba(83,104,232,.19); }
+    .primary-action:hover { background: var(--primary-dark); }
+
+    .queue-note {
+      margin: 18px 0 0;
+      color: #929bad;
+      font-size: 12px;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .quiz-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .stat-box {
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-soft);
+    }
+    .stat-label { display: block; margin-bottom: 6px; color: #8993a5; font-size: 11px; font-weight: 650; }
+    .stat-value { display: block; color: #28334a; font-size: 18px; font-weight: 850; font-variant-numeric: tabular-nums; }
+
+    .question-card {
+      padding: 26px 22px 25px;
+      border: 1px solid #e9ecf7;
+      border-radius: 21px;
+      background: linear-gradient(145deg, #fbfcff, #f8f9fe);
+      text-align: center;
+    }
+    .question-number { margin: 0 0 12px; color: #8993a5; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+    .quiz-character {
+      margin: 0 0 25px;
+      color: #202a42;
+      font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", KaiTi, serif;
+      font-size: clamp(68px, 13vw, 92px);
+      line-height: 1.25;
+      font-weight: 500;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+      text-align: left;
+    }
+    .option-button {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 61px;
+      padding: 12px 15px;
+      border: 1px solid #e4e8f1;
+      border-radius: 13px;
+      color: #344057;
+      background: #fff;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color .16s ease, background .16s ease, transform .16s ease;
+    }
+    .option-button:not(:disabled):hover { transform: translateY(-1px); border-color: #bfc8fa; background: #fcfcff; }
+    .option-letter {
+      display: grid;
+      flex: 0 0 27px;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border-radius: 8px;
+      color: #8390a6;
+      background: #f1f3f8;
+      font-size: 11px;
+      font-weight: 850;
+    }
+    .option-text { font-size: 16px; font-weight: 750; }
+    .option-button:disabled { cursor: default; }
+    .option-button.is-correct { border-color: #9edbc1; color: #147b59; background: var(--green-soft); }
+    .option-button.is-correct .option-letter { color: #fff; background: #26a477; }
+    .option-button.is-wrong { border-color: #f1b4bb; color: #b43d4c; background: var(--red-soft); }
+    .option-button.is-wrong .option-letter { color: #fff; background: #dd6471; }
+
+    .feedback {
+      min-height: 25px;
+      margin: 17px 0 0;
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.5;
+    }
+    .feedback.success { color: var(--green); }
+    .feedback.error { color: var(--red); }
+    .next-row { display: flex; justify-content: center; margin-top: 19px; }
+    .next-row .action-button { min-width: 190px; }
+
+    .complete-panel {
+      padding: 30px 20px;
+      border: 1px solid #dcefe6;
+      border-radius: 21px;
+      background: linear-gradient(145deg, #f5fcf8, #fbfefd);
+      text-align: center;
+    }
+    .complete-icon {
+      display: grid;
+      width: 58px;
+      height: 58px;
+      place-items: center;
+      margin: 0 auto 16px;
+      border-radius: 18px;
+      color: #16815c;
+      background: #e2f6ec;
+      font-size: 27px;
+      font-weight: 800;
+    }
+    .complete-title { margin: 0; color: #1c3f33; font-size: 24px; letter-spacing: -.04em; }
+    .complete-description { margin: 9px auto 22px; color: #74877e; font-size: 13px; line-height: 1.6; }
+    .summary-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; margin: 0 auto 22px; max-width: 570px; }
+    .summary-item { padding: 14px 8px; border: 1px solid #deeee6; border-radius: 13px; background: rgba(255,255,255,.8); }
+    .summary-item strong { display: block; margin-bottom: 5px; color: #20634a; font-size: 21px; font-weight: 850; }
+    .summary-item span { color: #83958b; font-size: 10px; font-weight: 700; line-height: 1.4; }
+
+    [hidden] { display: none !important; }
+
+    .footer-note {
+      margin: 23px 0 0;
+      color: #a0a8b6;
+      font-size: 11px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .app-shell { width: min(100% - 24px, 900px); padding: 22px 0 34px; }
+      .topbar { margin-bottom: 34px; }
+      .brand { font-size: 14px; }
+      .level-tag { padding: 7px 9px; font-size: 10px; }
+      .subtitle { font-size: 14px; }
+      .mode-button { min-height: 46px; padding: 10px 8px; font-size: 12px; }
+      .progress-card { padding: 16px; }
+      .workspace { padding: 18px 14px; border-radius: 21px; }
+      .flash-stage { min-height: 250px; padding: 12px; }
+      .flash-card { min-height: 215px; padding: 18px; }
+      .decision-row { gap: 9px; }
+      .action-button { min-height: 48px; padding: 11px 9px; font-size: 12px; }
+      .quiz-stats { gap: 7px; }
+      .stat-box { padding: 11px 9px; }
+      .stat-label { min-height: 28px; font-size: 10px; line-height: 1.35; }
+      .stat-value { font-size: 16px; }
+      .question-card { padding: 22px 13px; }
+      .options-grid { gap: 8px; }
+      .option-button { min-height: 57px; gap: 8px; padding: 9px; }
+      .option-text { font-size: 14px; }
+      .option-letter { flex-basis: 24px; width: 24px; height: 24px; }
+      .summary-grid { gap: 6px; }
+      .summary-item strong { font-size: 18px; }
+      .summary-item span { font-size: 9px; }
+    }
+
+    @media (max-width: 360px) {
+      .options-grid { grid-template-columns: 1fr; }
+      .mode-button { font-size: 11px; }
+      .decision-row { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="vi"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Thử Thách Điền Từ Tiếng Trung&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* =========================================================</p>
-<p class="p1"><span class="Apple-converted-space">           </span>CSS VARIABLES &amp; GLOBAL STYLES</p>
-<p class="p1"><span class="Apple-converted-space">           </span>========================================================= */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>:root {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--primary: #4A90E2;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--primary-dark: #357ABD;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--secondary: #FFB100;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--secondary-dark: #E6A000;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--success: #32CD32;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--error: #FF6347;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--bg-color: #E0F7FA;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--text-main: #333333;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--text-light: #FFFFFF;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--card-bg: #FFFFFF;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--shadow: 0 8px 16px rgba(0,0,0,0.15);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--shadow-sm: 0 4px 8px rgba(0,0,0,0.1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--font: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>* {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>user-select: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>-webkit-tap-highlight-color: transparent;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: var(--font);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: var(--bg-color);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-image: radial-gradient(circle at center, #E0F7FA 0%, #B2EBF2 100%);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-main);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100vw;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 100vh;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>h1, h2, h3, p { margin: 0; padding: 0; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.bg-element {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.4;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: float 6s infinite ease-in-out alternate;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes float {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>0% { transform: translateY(0) rotate(0deg); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>100% { transform: translateY(-20px) rotate(10deg); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.screen {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: 0; left: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 10;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.screen.active {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: fadeIn 0.5s ease-out;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes fadeIn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>from { opacity: 0; transform: scale(0.95); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>to { opacity: 1; transform: scale(1); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: var(--primary);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-light);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.5rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: var(--font);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 6px 0 var(--primary-dark), var(--shadow);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.1s ease;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: inline-flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn:active {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(6px);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 0 0 var(--primary-dark), var(--shadow-sm);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn-secondary {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: var(--secondary);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 6px 0 var(--secondary-dark), var(--shadow);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn-secondary:active {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 0 0 var(--secondary-dark), var(--shadow-sm);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn-success { background-color: var(--success); box-shadow: 0 6px 0 #228B22; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn-success:active { box-shadow: 0 0 0 #228B22; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.title {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 3rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--primary-dark);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-shadow: 3px 3px 0 #FFF, 5px 5px 0 rgba(0,0,0,0.1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 2;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.subtitle {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.5rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-main);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(255,255,255,0.7);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 2;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.home-menu {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 2;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 400px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* FLASHCARD STYLE (Lật 3D) */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flashcard-grid {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-wrap: wrap;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flashcard-wrapper {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: transparent;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 250px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 180px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>perspective: 1000px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flashcard-inner {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: transform 0.6s;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform-style: preserve-3d;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flashcard-wrapper.flipped .flashcard-inner {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: rotateY(180deg);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flashcard-front, .flashcard-back {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>backface-visibility: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: var(--shadow);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 5px solid var(--primary);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flashcard-front h2 { font-size: 3.5rem; color: var(--primary-dark); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flashcard-front p { margin-top: 10px; color: #888; font-size: 1.2rem; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flashcard-back {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: rotateY(180deg);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #FFF9C4;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-color: var(--secondary);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flashcard-back h3 { font-size: 2rem; color: var(--error); margin-bottom: 5px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flashcard-back p { font-size: 1.5rem; font-weight: bold; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.guide-container {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(255,255,255,0.5);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 900px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 90%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-height: 80vh;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow-y: auto;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 2;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.close-btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: 15px; right: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: var(--error);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 40px; height: 40px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 0 #CC0000;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 10;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.close-btn:active { transform: translateY(4px); box-shadow: 0 0 0; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* HUD &amp; GAME AREA */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.hud {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: 0; left: 0; right: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: space-between;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(255,255,255,0.8);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 4px solid white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 100;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.hud-stats { display: flex; gap: 20px; align-items: center; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.hearts { color: #FF1493; font-size: 1.5rem; display: flex; gap: 5px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.progress-bar-container {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-grow: 1;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #E0E0E0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 2px solid white;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.progress-bar {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: var(--success);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 0%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: width 0.3s ease;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.game-area {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-grow: 1;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 800px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 60px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.question-box {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 40px 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: var(--shadow);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 2.2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 5px solid var(--primary);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>line-height: 1.6;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.question-box .speaker-btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: -25px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>left: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: translateX(-50%);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 50px; height: 50px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.5rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: var(--primary);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 0 var(--primary-dark);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.question-box .speaker-btn:active { transform: translate(-50%, 4px); box-shadow: 0 0 0; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.sentence-blank {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: inline-block;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>min-width: 100px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 45px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 4px dashed var(--primary);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>vertical-align: bottom;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--primary-dark);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.word-bank {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-wrap: wrap;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.word-pill {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: var(--secondary);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 2rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 6px 0 var(--secondary-dark);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 3px solid white;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.word-pill:active { transform: translateY(6px); box-shadow: 0 0 0; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* OVERLAYS */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.overlay {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: 0; left: 0; right: 0; bottom: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(0,0,0,0.7);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 200;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>backdrop-filter: blur(3px);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.feedback-box {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 90%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 450px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 10px 30px rgba(0,0,0,0.3);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes popIn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>0% { transform: scale(0.5); opacity: 0; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>100% { transform: scale(1); opacity: 1; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.correct-theme { color: var(--success); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.wrong-theme { color: var(--error); }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.result-card {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 40px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: var(--shadow);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 8px solid var(--secondary);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 2;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.stars-container { font-size: 4rem; color: #FFD700; margin: 15px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.stat-row { display: flex; justify-content: space-between; font-size: 1.5rem; margin: 10px 0; border-bottom: 2px dashed #EEE; padding-bottom: 5px; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>canvas#confetti { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.shake { animation: shake 0.5s; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes shake {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>0% { transform: translateX(0); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>25% { transform: translateX(-10px); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>50% { transform: translateX(10px); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>75% { transform: translateX(-10px); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>100% { transform: translateX(0); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@media (max-width: 600px) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.title { font-size: 2.2rem; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.question-box { font-size: 1.8rem; padding: 30px 15px; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.word-pill { font-size: 1.5rem; padding: 10px 20px; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.hud { font-size: 1rem; padding: 10px; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.flashcard-wrapper { width: 100%; height: 160px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Background Decor --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="bg-element" style="top: 10%; left: 10%; font-size: 4rem;"&gt;🇨🇳&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="bg-element" style="top: 20%; right: 15%; font-size: 3rem;"&gt;🐼&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="bg-element" style="bottom: 15%; left: 20%; font-size: 3rem;"&gt;🏮&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="bg-element" style="bottom: 25%; right: 10%; font-size: 4rem;"&gt;📚&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;canvas id="confetti"&gt;&lt;/canvas&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 1. HOME SCREEN --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="screen-home" class="screen active"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1 class="title"&gt;🏮 CHINESE VOCAB&lt;br&gt;CHALLENGE&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p class="subtitle"&gt;Học từ vựng qua thử thách điền từ!&lt;/p&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="home-menu"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="btn btn-secondary" onclick="startGameFlow()"&gt;&lt;span style="font-size: 1.5rem;"&gt;▶&lt;/span&gt; Bắt Đầu Chơi&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="btn" onclick="showScreen('screen-guide')"&gt;&lt;span style="font-size: 1.5rem;"&gt;🎴&lt;/span&gt; Thẻ Từ Vựng&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="btn btn-success" onclick="toggleSound()" id="sound-btn"&gt;&lt;span style="font-size: 1.5rem;"&gt;🔊&lt;/span&gt; Âm thanh: BẬT&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 2. DICTIONARY / FLASHCARD SCREEN --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="screen-guide" class="screen"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="guide-container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="close-btn" onclick="showScreen('screen-home')"&gt;X&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 class="title" style="font-size: 2.5rem; color: #333; text-shadow: none;"&gt;Thẻ Từ Vựng 🎴&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p style="text-align: center; font-size: 1.2rem;"&gt;Chạm vào thẻ để xem nghĩa và Pinyin nhé!&lt;/p&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="flashcard-grid" id="all-flashcards"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- Sẽ được render bằng JS --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 3. GAME SCREEN --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="screen-game" class="screen"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="hud"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="hud-stats"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div&gt;⭐ &lt;span id="hud-score"&gt;0&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="hearts" id="hud-hearts"&gt;❤️❤️❤️&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="progress-bar-container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="progress-bar" id="hud-progress"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;&lt;span id="hud-q-count"&gt;1/5&lt;/span&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="game-area"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Question Box --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="question-box" id="q-box"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="speaker-btn" onclick="speakCurrentSentence()"&gt;🔊&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span id="q-pre"&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="sentence-blank" id="q-blank"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span id="q-post"&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Nút Hint Flashcard --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="btn btn-secondary" style="font-size: 1.2rem; padding: 10px 20px; margin-bottom: 20px; background: #9C27B0; box-shadow: 0 6px 0 #7B1FA2;" onclick="showHintModal()"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>💡 Quên từ? Xem Flashcard</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Word Bank Choices --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="word-bank" id="word-bank"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- Render bằng JS --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 4. RESULT SCREEN --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="screen-result" class="screen"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="result-card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h1 class="title"&gt;🏆 Chúc Mừng!&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stars-container" id="result-stars"&gt;⭐⭐⭐⭐⭐&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 id="result-rating" style="color: var(--primary-dark); margin-bottom: 20px;"&gt;Hán Ngữ Đại Sư!&lt;/h2&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stat-row"&gt;&lt;span&gt;Điểm:&lt;/span&gt; &lt;strong id="result-score"&gt;100&lt;/strong&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stat-row"&gt;&lt;span&gt;Số câu đúng:&lt;/span&gt; &lt;strong style="color: var(--success);" id="result-correct"&gt;0&lt;/strong&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="stat-row"&gt;&lt;span&gt;Số câu sai:&lt;/span&gt; &lt;strong style="color: var(--error);" id="result-wrong"&gt;0&lt;/strong&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="btn btn-secondary" onclick="startGameFlow()"&gt;🔁 Chơi Lại&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="btn" onclick="showScreen('screen-guide')"&gt;🎴 Ôn Tập Thẻ&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="btn btn-success" onclick="showScreen('screen-home')"&gt;🏠 Trang Chủ&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- FEEDBACK OVERLAY (ĐÚNG/SAI) --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="feedback-overlay" class="overlay"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="feedback-box" id="feedback-box"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style="font-size: 5rem; margin-bottom: 10px;" id="fb-icon"&gt;✅&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 style="font-size: 2.5rem; margin-bottom: 15px;" id="fb-title"&gt;Xuất Sắc!&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p style="font-size: 1.5rem; margin-bottom: 25px;" id="fb-text"&gt;Tiếp tục nào.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="btn btn-secondary" id="fb-btn" onclick="nextQuestion()"&gt;Tiếp tục ➔&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- HINT FLASHCARD OVERLAY --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="hint-overlay" class="overlay"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flashcard-wrapper" style="width: 300px; height: 220px;" onclick="this.classList.toggle('flipped')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="flashcard-inner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flashcard-front"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 id="hint-hanzi" style="font-size: 4.5rem;"&gt;词&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p&gt;Chạm để lật&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flashcard-back"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h3 id="hint-pinyin" style="font-size: 2.5rem;"&gt;cí&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p id="hint-meaning" style="font-size: 1.8rem; margin-top: 10px;"&gt;Từ vựng&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn btn-success" style="margin-top: 30px; z-index: 201;" onclick="closeHintModal()"&gt;Đã Hiểu ➔&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- =========================================================</p>
-<p class="p1"><span class="Apple-converted-space">         </span>JAVASCRIPT LOGIC</p>
-<p class="p1"><span class="Apple-converted-space">         </span>========================================================= --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- DATA (Dựa trên từ vựng bạn cung cấp) ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const vocabList = [</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ hanzi: "图书馆", pinyin: "túshūguǎn", meaning: "Thư viện" },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ hanzi: "漂亮", pinyin: "piàoliang", meaning: "Xinh đẹp" },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ hanzi: "近", pinyin: "jìn", meaning: "Gần" },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ hanzi: "远", pinyin: "yuǎn", meaning: "Xa" },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ hanzi: "送", pinyin: "sòng", meaning: "Tặng, đưa" },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ hanzi: "桌子", pinyin: "zhuōzi", meaning: "Cái bàn" },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ hanzi: "电脑", pinyin: "diànnǎo", meaning: "Máy vi tính" },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ hanzi: "医院", pinyin: "yīyuàn", meaning: "Bệnh viện" },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ hanzi: "同学", pinyin: "tóngxué", meaning: "Bạn học" }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Dữ liệu Game (Điền vào chỗ trống)</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const allQuestions = [</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ pre: "我喜欢看书，所以去", post: "。", ans: "图书馆", hintWord: "图书馆", choices: ["图书馆", "医院", "商店"] },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ pre: "这件衣服比那件", post: "。", ans: "漂亮", hintWord: "漂亮", choices: ["漂亮", "快乐", "非常"] },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ pre: "我家离学校很", post: "。", ans: "近", hintWord: "近", choices: ["近", "远", "高"] },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ pre: "我", post: "你礼物。", ans: "送", hintWord: "送", choices: ["送", "找", "问"] },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ pre: "他得了一张", post: "。", ans: "桌子", hintWord: "桌子", choices: ["桌子", "椅子", "电脑"] },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ pre: "他去", post: "看病。", ans: "医院", hintWord: "医院", choices: ["医院", "公司", "学校"] },</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{ pre: "我和", post: "一起上学。", ans: "同学", hintWord: "同学", choices: ["同学", "电脑", "桌子"] }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- STATE ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let state = {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>soundOn: true,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>score: 0,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>lives: 3,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>maxLives: 3,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>correct: 0,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>wrong: 0,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>questionQueue: [],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>totalQuestions: 5, // Số câu mỗi lượt chơi</p>
-<p class="p1"><span class="Apple-converted-space">            </span>currentQ: null,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>currentIndex: 0</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- AUDIO ENGINE ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let audioCtx;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function initAudio() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!audioCtx) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>audioCtx = new (window.AudioContext || window.webkitAudioContext)();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (audioCtx.state === 'suspended') audioCtx.resume();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function playTone(frequency, type, duration, vol=0.1) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!state.soundOn || !audioCtx) return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const osc = audioCtx.createOscillator();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const gain = audioCtx.createGain();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>osc.type = type;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gain.gain.setValueAtTime(vol, audioCtx.currentTime);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>osc.connect(gain);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gain.connect(audioCtx.destination);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>osc.start();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>osc.stop(audioCtx.currentTime + duration);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function playSound(type) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!state.soundOn) return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>initAudio();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (type === 'click') playTone(600, 'sine', 0.1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>else if (type === 'success') {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>playTone(523.25, 'sine', 0.1, 0.2);<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; playTone(659.25, 'sine', 0.1, 0.2), 100);<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; playTone(783.99, 'sine', 0.2, 0.2), 200);<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>}<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>else if (type === 'wrong') {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>playTone(300, 'sawtooth', 0.2, 0.2);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; playTone(250, 'sawtooth', 0.3, 0.2), 150);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function speakCurrentSentence() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const text = state.currentQ.pre + state.currentQ.ans + state.currentQ.post;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>speakText(text);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function speakText(text) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!state.soundOn) return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if ('speechSynthesis' in window) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>speechSynthesis.cancel();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const utterance = new SpeechSynthesisUtterance(text);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>utterance.lang = 'zh-CN'; // Tiếng Trung</p>
-<p class="p1"><span class="Apple-converted-space">                </span>utterance.rate = 0.8;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>speechSynthesis.speak(utterance);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function toggleSound() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>state.soundOn = !state.soundOn;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('sound-btn').innerHTML = `&lt;span style="font-size: 1.5rem;"&gt;${state.soundOn ? '🔊' : '🔇'}&lt;/span&gt; Âm thanh: ${state.soundOn ? 'BẬT' : 'TẮT'}`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if(state.soundOn) initAudio();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- NAVIGATION &amp; INIT ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function showScreen(id) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>playSound('click');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.screen').forEach(s =&gt; s.classList.remove('active'));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById(id).classList.add('active');</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if(id === 'screen-guide') renderFlashcardGuide();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function renderFlashcardGuide() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const container = document.getElementById('all-flashcards');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>container.innerHTML = vocabList.map(v =&gt; `</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flashcard-wrapper" onclick="this.classList.toggle('flipped')"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="flashcard-inner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flashcard-front"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h2&gt;${v.hanzi}&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;p&gt;Chạm để lật&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flashcard-back"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h3&gt;${v.pinyin}&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;p&gt;${v.meaning}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>`).join('');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- GAME FLOW ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function shuffleArray(arr) { return arr.sort(() =&gt; Math.random() - 0.5); }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function startGameFlow() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>initAudio();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>state.score = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>state.lives = state.maxLives;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>state.correct = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>state.wrong = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>state.currentIndex = 0;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Lấy ngẫu nhiên 5 câu hỏi</p>
-<p class="p1"><span class="Apple-converted-space">            </span>state.questionQueue = shuffleArray([...allQuestions]).slice(0, state.totalQuestions);</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>showScreen('screen-game');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>loadNextQuestion();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function loadNextQuestion() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if(state.currentIndex &gt;= state.totalQuestions || state.lives &lt;= 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return showResult();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>state.currentQ = state.questionQueue[state.currentIndex];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>state.currentIndex++;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>updateHUD();</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Cập nhật câu hỏi lên giao diện</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('q-pre').innerText = state.currentQ.pre;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('q-post').innerText = state.currentQ.post;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const blank = document.getElementById('q-blank');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>blank.innerText = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>blank.style.borderBottomStyle = 'dashed';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Cập nhật nút lựa chọn</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const choicesArr = shuffleArray([...state.currentQ.choices]);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const wordBank = document.getElementById('word-bank');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>wordBank.innerHTML = choicesArr.map(c =&gt;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>`&lt;div class="word-pill" onclick="checkAnswer('${c}')"&gt;${c}&lt;/div&gt;`</p>
-<p class="p1"><span class="Apple-converted-space">            </span>).join('');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function updateHUD() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hud-score').innerText = state.score;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hud-hearts').innerText = '❤️'.repeat(state.lives) + '🖤'.repeat(state.maxLives - state.lives);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hud-q-count').innerText = `${state.currentIndex}/${state.totalQuestions}`;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const progress = ((state.currentIndex - 1) / state.totalQuestions) * 100;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hud-progress').style.width = `${progress}%`;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function checkAnswer(selectedWord) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const isCorrect = (selectedWord === state.currentQ.ans);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const blank = document.getElementById('q-blank');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>blank.innerText = selectedWord;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>blank.style.borderBottomStyle = 'solid';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if(isCorrect) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>playSound('success');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.score += 20;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.correct++;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showFeedback(true, state.currentQ.ans);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>speakCurrentSentence(); // Đọc nguyên câu khi đúng</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>playSound('wrong');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.lives--;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.wrong++;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('q-box').classList.add('shake');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; document.getElementById('q-box').classList.remove('shake'), 500);</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>if(state.lives &lt;= 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>setTimeout(showResult, 1000);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>showFeedback(false, state.currentQ.ans);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function showFeedback(isCorrect, correctAnswer) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const overlay = document.getElementById('feedback-overlay');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const box = document.getElementById('feedback-box');</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if(isCorrect) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>box.className = 'feedback-box correct-theme';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('fb-icon').innerText = '✅';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('fb-title').innerText = 'Chính Xác!';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('fb-text').innerText = 'Giỏi quá, tiếp tục nhé.';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>box.className = 'feedback-box wrong-theme';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('fb-icon').innerText = '❌';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('fb-title').innerText = 'Sai rồi!';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('fb-text').innerHTML = `Đáp án đúng là: &lt;br&gt;&lt;strong style="font-size:2rem"&gt;${correctAnswer}&lt;/strong&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>overlay.style.display = 'flex';</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function nextQuestion() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('feedback-overlay').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>loadNextQuestion();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- HINT MODAL (FLASHCARD) ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function showHintModal() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>playSound('click');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Tìm data của từ hiện tại</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const wordData = vocabList.find(v =&gt; v.hanzi === state.currentQ.hintWord) ||<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                             </span>{ hanzi: state.currentQ.hintWord, pinyin: "???", meaning: "Không có dữ liệu" };</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hint-hanzi').innerText = wordData.hanzi;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hint-pinyin').innerText = wordData.pinyin;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hint-meaning').innerText = wordData.meaning;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Reset trạng thái lật</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#hint-overlay .flashcard-wrapper').classList.remove('flipped');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hint-overlay').style.display = 'flex';</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function closeHintModal() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>playSound('click');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hint-overlay').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- RESULT SCREEN ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function showResult() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('feedback-overlay').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>showScreen('screen-result');</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('result-score').innerText = state.score;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('result-correct').innerText = state.correct;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('result-wrong').innerText = state.wrong;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const stars = document.getElementById('result-stars');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const rating = document.getElementById('result-rating');</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if(state.lives === 3) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>stars.innerText = '⭐⭐⭐⭐⭐'; rating.innerText = 'Hoàn Hảo! 🏆'; fireConfetti();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else if (state.lives &gt; 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>stars.innerText = '⭐⭐⭐'; rating.innerText = 'Khá Tốt! 👍';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>stars.innerText = '⭐'; rating.innerText = 'Cố gắng ôn tập thêm nhé! 💪';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- CONFETTI EFFECT ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function fireConfetti() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const canvas = document.getElementById('confetti');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const ctx = canvas.getContext('2d');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>canvas.width = window.innerWidth;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>canvas.height = window.innerHeight;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const particles = [];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722'];</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>for(let i=0; i&lt;100; i++) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>particles.push({</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>x: canvas.width / 2,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>y: canvas.height / 2 + 100,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>r: Math.random() * 6 + 2,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>dx: Math.random() * 10 - 5,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>dy: Math.random() * -10 - 5,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>color: colors[Math.floor(Math.random() * colors.length)]</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>function animate() {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>requestAnimationFrame(animate);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>ctx.clearRect(0, 0, canvas.width, canvas.height);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>particles.forEach(p =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>ctx.beginPath();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>ctx.fillStyle = p.color;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>ctx.fill();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>p.x += p.dx;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>p.y += p.dy;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>p.dy += 0.2; // Gravity</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animate();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; { ctx.clearRect(0,0,canvas.width, canvas.height); }, 3000);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">汉</span>
+        <span>HSK 1 · Vocabulary</span>
+      </div>
+      <span class="level-tag">HSK LEVEL 1</span>
+    </header>
+
+    <section class="intro">
+      <p class="eyebrow">Chinese learning space</p>
+      <h1>Nhận diện mặt chữ Hán</h1>
+      <p class="subtitle">Luyện ghi nhớ chữ Hán và Pinyin qua flashcard, sau đó kiểm tra lại bằng câu hỏi trắc nghiệm.</p>
+    </section>
+
+    <nav class="mode-switch" aria-label="Chọn chế độ học">
+      <button class="mode-button active" id="flashTab" type="button" aria-pressed="true">Chế độ Học (Flashcard)</button>
+      <button class="mode-button" id="quizTab" type="button" aria-pressed="false">Chế độ Kiểm tra (Quiz)</button>
+    </nav>
+
+    <main>
+      <section class="panel" id="flashSection" aria-label="Chế độ học flashcard">
+        <div class="progress-card">
+          <div class="progress-top">
+            <span class="progress-title">Tiến độ đã thuộc</span>
+            <strong class="progress-count" id="flashProgressCount">0/150</strong>
+          </div>
+          <div class="progress-track" role="progressbar" aria-label="Tiến độ học" aria-valuemin="0" aria-valuemax="150" aria-valuenow="0" id="flashProgressTrack">
+            <div class="progress-fill" id="flashProgressFill"></div>
+          </div>
+        </div>
+
+        <div class="workspace">
+          <div class="workspace-heading">
+            <p class="section-label">Flashcard</p>
+            <button class="quiet-button" id="resetFlashButton" type="button">↻ Học lại từ đầu</button>
+          </div>
+
+          <div id="flashStudyArea">
+            <div class="flash-stage">
+              <button class="flash-card" id="flashCard" type="button" aria-label="Lật thẻ để xem Pinyin">
+                <span class="flash-face" id="flashFace">的</span>
+              </button>
+            </div>
+            <p class="flash-hint" id="flashHint">Chạm vào thẻ để lật mặt</p>
+            <div class="utility-row">
+              <button class="sound-button" id="flashSoundButton" type="button"><span class="sound-icon" aria-hidden="true">🔊</span> Nghe phát âm</button>
+            </div>
+            <div class="decision-row">
+              <button class="action-button not-known" id="notKnownButton" type="button">↺ Chưa thuộc</button>
+              <button class="action-button known" id="knownButton" type="button">✓ Đã thuộc</button>
+            </div>
+            <p class="queue-note" id="flashQueueNote">Từ chưa thuộc sẽ được đưa lại vào hàng đợi sau 3–5 thẻ.</p>
+          </div>
+
+          <div class="complete-panel" id="flashCompletePanel" hidden>
+            <div class="complete-icon" aria-hidden="true">✓</div>
+            <h2 class="complete-title">Hoàn thành lượt học!</h2>
+            <p class="complete-description">Bạn đã đánh dấu thuộc toàn bộ danh sách từ vựng.</p>
+            <button class="action-button primary-action" id="flashRestartComplete" type="button">Học lại từ đầu</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="quizSection" aria-label="Chế độ kiểm tra trắc nghiệm" hidden>
+        <div class="progress-card">
+          <div class="progress-top">
+            <span class="progress-title">Tiến độ hoàn thành từ</span>
+            <strong class="progress-count" id="quizProgressCount">0/150</strong>
+          </div>
+          <div class="progress-track" role="progressbar" aria-label="Tiến độ kiểm tra" aria-valuemin="0" aria-valuemax="150" aria-valuenow="0" id="quizProgressTrack">
+            <div class="progress-fill" id="quizProgressFill"></div>
+          </div>
+        </div>
+
+        <div class="workspace">
+          <div class="workspace-heading">
+            <p class="section-label">Quiz · Chọn Pinyin đúng</p>
+            <button class="quiet-button" id="resetQuizButton" type="button">↻ Làm lại bài kiểm tra</button>
+          </div>
+
+          <div id="quizPlayArea">
+            <div class="quiz-stats">
+              <div class="stat-box">
+                <span class="stat-label">Từ đã hoàn thành</span>
+                <strong class="stat-value" id="quizMasteredStat">0/150</strong>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Đúng ngay lần đầu</span>
+                <strong class="stat-value" id="quizFirstTryStat">0/150</strong>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Lượt đúng / lượt trả lời</span>
+                <strong class="stat-value" id="quizAccuracyStat">0/0</strong>
+              </div>
+            </div>
+
+            <div class="question-card">
+              <p class="question-number" id="quizQuestionNumber">CHỌN PINYIN ĐÚNG</p>
+              <div class="quiz-character" id="quizCharacter">的</div>
+              <div class="options-grid" id="quizOptions"></div>
+              <p class="feedback" id="quizFeedback" aria-live="polite"></p>
+              <div class="next-row" id="quizNextRow" hidden>
+                <button class="action-button primary-action" id="quizNextButton" type="button">Câu tiếp theo →</button>
+              </div>
+            </div>
+            <p class="queue-note">Câu trả lời sai sẽ được đưa lại vào hàng đợi sau 3–5 câu hỏi.</p>
+          </div>
+
+          <div class="complete-panel" id="quizCompletePanel" hidden>
+            <div class="complete-icon" aria-hidden="true">✓</div>
+            <h2 class="complete-title">Bạn đã hoàn thành bài kiểm tra!</h2>
+            <p class="complete-description">Toàn bộ từ vựng đã được trả lời đúng ít nhất một lần.</p>
+            <div class="summary-grid">
+              <div class="summary-item"><strong id="summaryFirstTry">0/150</strong><span>ĐÚNG NGAY LẦN ĐẦU</span></div>
+              <div class="summary-item"><strong id="summaryAccuracy">0/0</strong><span>LƯỢT ĐÚNG / TỔNG LƯỢT</span></div>
+              <div class="summary-item"><strong id="summaryAttempts">0</strong><span>TỔNG LƯỢT TRẢ LỜI</span></div>
+            </div>
+            <button class="action-button primary-action" id="quizRestartComplete" type="button">Làm lại bài kiểm tra</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <p class="footer-note">Phát âm sử dụng giọng tổng hợp zh-CN có sẵn trên trình duyệt hoặc hệ điều hành.</p>
+  </div>
+
+  <script>
+    // Danh sách từ vựng được giữ nguyên theo nội dung bạn cung cấp.
+    const vocabulary = [
+      { hanzi: "的", pinyin: "de" },
+      { hanzi: "我", pinyin: "wǒ" },
+      { hanzi: "你", pinyin: "nǐ" },
+      { hanzi: "是", pinyin: "shì" },
+      { hanzi: "了", pinyin: "le" },
+      { hanzi: "不", pinyin: "bù" },
+      { hanzi: "在", pinyin: "zài" },
+      { hanzi: "他", pinyin: "tā" },
+      { hanzi: "我们", pinyin: "wǒmen" },
+      { hanzi: "好", pinyin: "hǎo" },
+      { hanzi: "有", pinyin: "yǒu" },
+      { hanzi: "这", pinyin: "zhè" },
+      { hanzi: "会", pinyin: "huì" },
+      { hanzi: "吗", pinyin: "ma" },
+      { hanzi: "什么", pinyin: "shénme" },
+      { hanzi: "说", pinyin: "shuō" },
+      { hanzi: "她", pinyin: "tā" },
+      { hanzi: "想", pinyin: "xiǎng" },
+      { hanzi: "一", pinyin: "yī" },
+      { hanzi: "很", pinyin: "hěn" },
+      { hanzi: "人", pinyin: "rén" },
+      { hanzi: "那", pinyin: "nà" },
+      { hanzi: "来", pinyin: "lái" },
+      { hanzi: "都", pinyin: "dōu" },
+      { hanzi: "个", pinyin: "gè" },
+      { hanzi: "能", pinyin: "néng" },
+      { hanzi: "去", pinyin: "qù" },
+      { hanzi: "和", pinyin: "hé" },
+      { hanzi: "做", pinyin: "zuò" },
+      { hanzi: "上", pinyin: "shàng" },
+      { hanzi: "没有", pinyin: "méiyǒu" },
+      { hanzi: "看", pinyin: "kàn" },
+      { hanzi: "怎么", pinyin: "zěnme" },
+      { hanzi: "现在", pinyin: "xiànzài" },
+      { hanzi: "点", pinyin: "diǎn" },
+      { hanzi: "呢", pinyin: "ne" },
+      { hanzi: "太", pinyin: "tài" },
+      { hanzi: "里", pinyin: "lǐ" },
+      { hanzi: "听", pinyin: "tīng" },
+      { hanzi: "谁", pinyin: "shuí" },
+      { hanzi: "多", pinyin: "duō" },
+      { hanzi: "时候", pinyin: "shíhou" },
+      { hanzi: "下", pinyin: "xià" },
+      { hanzi: "谢谢", pinyin: "xièxiè" },
+      { hanzi: "先生", pinyin: "xiānsheng" },
+      { hanzi: "喜欢", pinyin: "xǐhuan" },
+      { hanzi: "大", pinyin: "dà" },
+      { hanzi: "东西", pinyin: "dōngxi" },
+      { hanzi: "小", pinyin: "xiǎo" },
+      { hanzi: "叫", pinyin: "jiào" },
+      { hanzi: "爱", pinyin: "ài" },
+      { hanzi: "年", pinyin: "nián" },
+      { hanzi: "请", pinyin: "qǐng" },
+      { hanzi: "回", pinyin: "huí" },
+      { hanzi: "工作", pinyin: "gōngzuò" },
+      { hanzi: "钱", pinyin: "qián" },
+      { hanzi: "吃", pinyin: "chī" },
+      { hanzi: "开", pinyin: "kāi" },
+      { hanzi: "家", pinyin: "jiā" },
+      { hanzi: "哪", pinyin: "nǎ" },
+      { hanzi: "朋友", pinyin: "péngyou" },
+      { hanzi: "妈妈", pinyin: "māmā" },
+      { hanzi: "今天", pinyin: "jīntiān" },
+      { hanzi: "几", pinyin: "jǐ" },
+      { hanzi: "爸爸", pinyin: "bàba" },
+      { hanzi: "些", pinyin: "xiē" },
+      { hanzi: "怎么样", pinyin: "zěnmeyàng" },
+      { hanzi: "对不起", pinyin: "duìbuqǐ" },
+      { hanzi: "住", pinyin: "zhù" },
+      { hanzi: "三", pinyin: "sān" },
+      { hanzi: "高兴", pinyin: "gāoxìng" },
+      { hanzi: "买", pinyin: "mǎi" },
+      { hanzi: "医生", pinyin: "yīshēng" },
+      { hanzi: "哪儿", pinyin: "nǎer" },
+      { hanzi: "名字", pinyin: "míngzì" },
+      { hanzi: "认识", pinyin: "rènshi" },
+      { hanzi: "坐", pinyin: "zuò" },
+      { hanzi: "喝", pinyin: "hē" },
+      { hanzi: "写", pinyin: "xiě" },
+      { hanzi: "月", pinyin: "yuè" },
+      { hanzi: "号", pinyin: "hào" },
+      { hanzi: "狗", pinyin: "gǒu" },
+      { hanzi: "岁", pinyin: "suì" },
+      { hanzi: "看见", pinyin: "kànjiàn" },
+      { hanzi: "打电话", pinyin: "dǎdiànhuà" },
+      { hanzi: "喂", pinyin: "wèi" },
+      { hanzi: "儿子", pinyin: "érzi" },
+      { hanzi: "漂亮", pinyin: "piàoliang" },
+      { hanzi: "分钟", pinyin: "fēnzhōng" },
+      { hanzi: "再见", pinyin: "zàijiàn" },
+      { hanzi: "本", pinyin: "běn" },
+      { hanzi: "明天", pinyin: "míngtiān" },
+      { hanzi: "多少", pinyin: "duōshǎo" },
+      { hanzi: "块", pinyin: "kuài" },
+      { hanzi: "女儿", pinyin: "nǚér" },
+      { hanzi: "小姐", pinyin: "xiǎojiě" },
+      { hanzi: "衣服", pinyin: "yīfu" },
+      { hanzi: "水", pinyin: "shuǐ" },
+      { hanzi: "学校", pinyin: "xuéxiào" },
+      { hanzi: "电影", pinyin: "diànyǐng" },
+      { hanzi: "书", pinyin: "shū" },
+      { hanzi: "四", pinyin: "sì" },
+      { hanzi: "五", pinyin: "wǔ" },
+      { hanzi: "医院", pinyin: "yīyuàn" },
+      { hanzi: "少", pinyin: "shǎo" },
+      { hanzi: "没关系", pinyin: "méiguānxi" },
+      { hanzi: "飞机", pinyin: "fēijī" },
+      { hanzi: "二", pinyin: "èr" },
+      { hanzi: "电视", pinyin: "diànshì" },
+      { hanzi: "读", pinyin: "dú" },
+      { hanzi: "后面", pinyin: "hòumian" },
+      { hanzi: "昨天", pinyin: "zuótiān" },
+      { hanzi: "睡觉", pinyin: "shuìjiào" },
+      { hanzi: "六", pinyin: "liù" },
+      { hanzi: "老师", pinyin: "lǎoshī" },
+      { hanzi: "星期", pinyin: "xīngqī" },
+      { hanzi: "十", pinyin: "shí" },
+      { hanzi: "猫", pinyin: "māo" },
+      { hanzi: "电脑", pinyin: "diànnǎo" },
+      { hanzi: "热", pinyin: "rè" },
+      { hanzi: "学生", pinyin: "xuésheng" },
+      { hanzi: "下午", pinyin: "xiàwǔ" },
+      { hanzi: "字", pinyin: "zì" },
+      { hanzi: "学习", pinyin: "xuéxí" },
+      { hanzi: "冷", pinyin: "lěng" },
+      { hanzi: "前面", pinyin: "qiánmian" },
+      { hanzi: "八", pinyin: "bā" },
+      { hanzi: "中国", pinyin: "zhōngguó" },
+      { hanzi: "七", pinyin: "qī" },
+      { hanzi: "菜", pinyin: "cài" },
+      { hanzi: "桌子", pinyin: "zhuōzi" },
+      { hanzi: "出租车", pinyin: "chūzūchē" },
+      { hanzi: "天气", pinyin: "tiānqì" },
+      { hanzi: "茶", pinyin: "chá" },
+      { hanzi: "九", pinyin: "jiǔ" },
+      { hanzi: "商店", pinyin: "shāngdiàn" },
+      { hanzi: "椅子", pinyin: "yǐzi" },
+      { hanzi: "同学", pinyin: "tóngxué" },
+      { hanzi: "一点儿", pinyin: "yīdiǎner" },
+      { hanzi: "苹果", pinyin: "píngguǒ" },
+      { hanzi: "饭店", pinyin: "fàndiàn" },
+      { hanzi: "中午", pinyin: "zhōngwǔ" },
+      { hanzi: "上午", pinyin: "shàngwǔ" },
+      { hanzi: "水果", pinyin: "shuǐguǒ" },
+      { hanzi: "杯子", pinyin: "bēizi" },
+      { hanzi: "下雨", pinyin: "xiàyǔ" },
+      { hanzi: "米饭", pinyin: "mǐfàn" },
+      { hanzi: "北京", pinyin: "běijīng" },
+      { hanzi: "汉语", pinyin: "hànyǔ" },
+      { hanzi: "不客气", pinyin: "búkèqi" }
+    ];
+
+    const TOTAL_WORDS = vocabulary.length;
+    const $ = (id) => document.getElementById(id);
+
+    // Trộn mảng theo Fisher–Yates.
+    function shuffle(items) {
+      const result = [...items];
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    function randomDelay() {
+      return Math.floor(Math.random() * 3) + 3; // 3, 4 hoặc 5 thẻ/câu hỏi.
+    }
+
+    function putBackAfterDelay(queue, wordIndex) {
+      const position = Math.min(randomDelay(), queue.length);
+      queue.splice(position, 0, wordIndex);
+    }
+
+    // Phát âm chữ Hán bằng giọng Trung Quốc (zh-CN) của trình duyệt.
+    function speakWord(wordIndex) {
+      if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(vocabulary[wordIndex].hanzi);
+      utterance.lang = "zh-CN";
+      utterance.rate = 0.88;
+      utterance.pitch = 1;
+
+      const voices = window.speechSynthesis.getVoices();
+      const chineseVoice = voices.find((voice) => /^zh[-_]CN$/i.test(voice.lang))
+        || voices.find((voice) => /^zh/i.test(voice.lang));
+      if (chineseVoice) utterance.voice = chineseVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // -------------------- CHUYỂN CHẾ ĐỘ --------------------
+    let currentMode = "flash";
+
+    function switchMode(mode) {
+      currentMode = mode;
+      const isFlash = mode === "flash";
+      $("flashSection").hidden = !isFlash;
+      $("quizSection").hidden = isFlash;
+      $("flashTab").classList.toggle("active", isFlash);
+      $("quizTab").classList.toggle("active", !isFlash);
+      $("flashTab").setAttribute("aria-pressed", String(isFlash));
+      $("quizTab").setAttribute("aria-pressed", String(!isFlash));
+    }
+
+    $("flashTab").addEventListener("click", () => switchMode("flash"));
+    $("quizTab").addEventListener("click", () => switchMode("quiz"));
+
+    // -------------------- CHẾ ĐỘ FLASHCARD --------------------
+    let flashQueue = [];
+    let flashCurrent = null;
+    let flashKnown = new Set();
+    let flashFlipped = false;
+
+    function resetFlashcards() {
+      flashQueue = shuffle(vocabulary.map((_, index) => index));
+      flashKnown = new Set();
+      flashCurrent = flashQueue.shift() ?? null;
+      flashFlipped = false;
+      renderFlashcard();
+    }
+
+    function renderFlashcard() {
+      const completed = flashCurrent === null;
+      $("flashStudyArea").hidden = completed;
+      $("flashCompletePanel").hidden = !completed;
+
+      const count = flashKnown.size;
+      $("flashProgressCount").textContent = `${count}/${TOTAL_WORDS}`;
+      $("flashProgressFill").style.width = `${(count / TOTAL_WORDS) * 100}%`;
+      $("flashProgressTrack").setAttribute("aria-valuenow", String(count));
+
+      if (completed) return;
+
+      const word = vocabulary[flashCurrent];
+      $("flashFace").textContent = flashFlipped ? word.pinyin : word.hanzi;
+      $("flashFace").classList.toggle("pinyin-face", flashFlipped);
+      $("flashCard").setAttribute("aria-label", flashFlipped ? "Lật thẻ để xem chữ Hán" : "Lật thẻ để xem Pinyin");
+      $("flashHint").textContent = flashFlipped ? "Chạm vào thẻ để xem lại chữ Hán" : "Chạm vào thẻ để lật mặt";
+      $("flashQueueNote").textContent = `Còn ${flashQueue.length + 1} từ trong lượt học này. Từ chưa thuộc sẽ quay lại sau 3–5 thẻ.`;
+    }
+
+    function advanceFlashcard(markKnown) {
+      if (flashCurrent === null) return;
+
+      const answeredIndex = flashCurrent;
+      if (markKnown) {
+        flashKnown.add(answeredIndex);
+      } else {
+        putBackAfterDelay(flashQueue, answeredIndex);
+      }
+
+      flashCurrent = flashQueue.shift() ?? null;
+      flashFlipped = false;
+      renderFlashcard();
+    }
+
+    $("flashCard").addEventListener("click", () => {
+      if (flashCurrent === null) return;
+      flashFlipped = !flashFlipped;
+      renderFlashcard();
+    });
+
+    $("flashSoundButton").addEventListener("click", () => {
+      if (flashCurrent !== null) speakWord(flashCurrent);
+    });
+    $("notKnownButton").addEventListener("click", () => advanceFlashcard(false));
+    $("knownButton").addEventListener("click", () => advanceFlashcard(true));
+    $("resetFlashButton").addEventListener("click", resetFlashcards);
+    $("flashRestartComplete").addEventListener("click", resetFlashcards);
+
+    // -------------------- CHẾ ĐỘ QUIZ --------------------
+    let quizQueue = [];
+    let quizCurrent = null;
+    let quizOptions = [];
+    let quizMastered = new Set();
+    let quizSeen = new Set();
+    let quizFirstTryCorrect = new Set();
+    let quizAttempts = 0;
+    let quizCorrectAttempts = 0;
+    let quizAnswered = false;
+
+    function createQuizOptions(correctIndex) {
+      const correctPinyin = vocabulary[correctIndex].pinyin;
+      // Không dùng từ có cùng Pinyin làm đáp án nhiễu, tránh có hơn một lựa chọn đúng.
+      const distractors = [...new Set(
+        vocabulary
+          .filter((word, index) => index !== correctIndex && word.pinyin !== correctPinyin)
+          .map((word) => word.pinyin)
+      )];
+
+      return shuffle([
+        correctPinyin,
+        ...shuffle(distractors).slice(0, 3)
+      ]);
+    }
+
+    function resetQuiz() {
+      quizQueue = shuffle(vocabulary.map((_, index) => index));
+      quizCurrent = null;
+      quizOptions = [];
+      quizMastered = new Set();
+      quizSeen = new Set();
+      quizFirstTryCorrect = new Set();
+      quizAttempts = 0;
+      quizCorrectAttempts = 0;
+      quizAnswered = false;
+      nextQuizQuestion();
+    }
+
+    function nextQuizQuestion() {
+      quizCurrent = quizQueue.shift() ?? null;
+      quizAnswered = false;
+
+      if (quizCurrent === null) {
+        renderQuizComplete();
+        return;
+      }
+
+      quizOptions = createQuizOptions(quizCurrent);
+      renderQuiz();
+    }
+
+    function renderQuiz() {
+      $("quizPlayArea").hidden = false;
+      $("quizCompletePanel").hidden = true;
+
+      const masteredCount = quizMastered.size;
+      $("quizProgressCount").textContent = `${masteredCount}/${TOTAL_WORDS}`;
+      $("quizProgressFill").style.width = `${(masteredCount / TOTAL_WORDS) * 100}%`;
+      $("quizProgressTrack").setAttribute("aria-valuenow", String(masteredCount));
+      $("quizMasteredStat").textContent = `${masteredCount}/${TOTAL_WORDS}`;
+      $("quizFirstTryStat").textContent = `${quizFirstTryCorrect.size}/${TOTAL_WORDS}`;
+      $("quizAccuracyStat").textContent = `${quizCorrectAttempts}/${quizAttempts}`;
+      $("quizQuestionNumber").textContent = `CÂU HỎI · ${masteredCount + 1}/${TOTAL_WORDS} TỪ ĐÃ HOÀN THÀNH`;
+      $("quizCharacter").textContent = vocabulary[quizCurrent].hanzi;
+      $("quizFeedback").textContent = "";
+      $("quizFeedback").className = "feedback";
+      $("quizNextRow").hidden = true;
+      $("quizNextButton").textContent = quizQueue.length === 0 ? "Xem kết quả →" : "Câu tiếp theo →";
+
+      const optionsContainer = $("quizOptions");
+      optionsContainer.replaceChildren();
+      const letters = ["A", "B", "C", "D"];
+
+      quizOptions.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "option-button";
+        button.dataset.pinyin = option;
+
+        const letter = document.createElement("span");
+        letter.className = "option-letter";
+        letter.textContent = letters[index];
+
+        const text = document.createElement("span");
+        text.className = "option-text";
+        text.textContent = option;
+
+        button.append(letter, text);
+        button.addEventListener("click", () => answerQuiz(option));
+        optionsContainer.append(button);
+      });
+    }
+
+    function answerQuiz(selectedPinyin) {
+      if (quizAnswered || quizCurrent === null) return;
+
+      quizAnswered = true;
+      quizAttempts += 1;
+      const correctPinyin = vocabulary[quizCurrent].pinyin;
+      const isFirstAttempt = !quizSeen.has(quizCurrent);
+      quizSeen.add(quizCurrent);
+      const isCorrect = selectedPinyin === correctPinyin;
+
+      if (isCorrect) {
+        quizCorrectAttempts += 1;
+        quizMastered.add(quizCurrent);
+        if (isFirstAttempt) quizFirstTryCorrect.add(quizCurrent);
+      } else {
+        putBackAfterDelay(quizQueue, quizCurrent);
+      }
+
+      [...$("quizOptions").querySelectorAll(".option-button")].forEach((button) => {
+        button.disabled = true;
+        if (button.dataset.pinyin === correctPinyin) button.classList.add("is-correct");
+        if (button.dataset.pinyin === selectedPinyin && !isCorrect) button.classList.add("is-wrong");
+      });
+
+      const feedback = $("quizFeedback");
+      if (isCorrect) {
+        feedback.textContent = "Chính xác!";
+        feedback.classList.add("success");
+      } else {
+        feedback.textContent = `Chưa chính xác. Đáp án: ${correctPinyin}`;
+        feedback.classList.add("error");
+      }
+
+      $("quizMasteredStat").textContent = `${quizMastered.size}/${TOTAL_WORDS}`;
+      $("quizFirstTryStat").textContent = `${quizFirstTryCorrect.size}/${TOTAL_WORDS}`;
+      $("quizAccuracyStat").textContent = `${quizCorrectAttempts}/${quizAttempts}`;
+      $("quizProgressCount").textContent = `${quizMastered.size}/${TOTAL_WORDS}`;
+      $("quizProgressFill").style.width = `${(quizMastered.size / TOTAL_WORDS) * 100}%`;
+      $("quizProgressTrack").setAttribute("aria-valuenow", String(quizMastered.size));
+      $("quizNextButton").textContent = quizQueue.length === 0 ? "Xem kết quả →" : "Câu tiếp theo →";
+      $("quizNextRow").hidden = false;
+
+      // Đọc chữ Hán sau khi người học chọn đáp án.
+      speakWord(quizCurrent);
+    }
+
+    function renderQuizComplete() {
+      $("quizPlayArea").hidden = true;
+      $("quizCompletePanel").hidden = false;
+      $("quizProgressCount").textContent = `${quizMastered.size}/${TOTAL_WORDS}`;
+      $("quizProgressFill").style.width = "100%";
+      $("quizProgressTrack").setAttribute("aria-valuenow", String(TOTAL_WORDS));
+      $("summaryFirstTry").textContent = `${quizFirstTryCorrect.size}/${TOTAL_WORDS}`;
+      $("summaryAccuracy").textContent = `${quizCorrectAttempts}/${quizAttempts}`;
+      $("summaryAttempts").textContent = String(quizAttempts);
+    }
+
+    $("quizNextButton").addEventListener("click", nextQuizQuestion);
+    $("resetQuizButton").addEventListener("click", resetQuiz);
+    $("quizRestartComplete").addEventListener("click", resetQuiz);
+
+    // -------------------- KHỞI TẠO --------------------
+    if (TOTAL_WORDS !== 150) {
+      console.warn(`Danh sách hiện có ${TOTAL_WORDS} từ; mục tiêu dự kiến là 150 từ.`);
+    }
+    resetFlashcards();
+    resetQuiz();
+    switchMode("flash");
+  </script>
 </body>
 </html>
